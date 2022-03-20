@@ -2,13 +2,15 @@ from __future__ import annotations
 from helpers import Swap
 from helpers import dirs
 
+from typing import List, Tuple
+
 class Vertex:
     GScore: float
     FScore: float
     Parent: Vertex
-    Neighbors: list[Vertex]
-    Value: list[list[int]]
-    EmptySpot: tuple[int, int]
+    Neighbors: List[Vertex]
+    Value: List[List[int]]
+    EmptySpot: Tuple[int, int]
 
     def __init__(self: Vertex):
         self.GScore = float("inf")
@@ -36,7 +38,7 @@ class Vertex:
     def __ge__(self: Vertex, obj: Vertex):
         return self.FScore >= obj.FScore
 
-    def GenerateMoves(self: Vertex, goal: list[list[int]]) -> bool:
+    def GenerateMoves(self: Vertex, goal: List[List[int]]) -> bool:
 
         if self.Value == goal:
             return True

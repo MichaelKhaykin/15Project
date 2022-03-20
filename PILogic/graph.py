@@ -4,9 +4,11 @@ from collections import deque
 from heapq import *
 from hueristics import Hueristics
 
+from typing import List, Tuple, Dict
+
 class Graph:
 
-    Mapping: dict[int, tuple[int, int]]
+    Mapping: Dict[int, Tuple[int, int]]
 
     def __init__(self: Graph, width: int, height: int):
         self.Mapping = {}
@@ -61,7 +63,7 @@ class Graph:
                 visited.append(x.Value)
 
         #connect
-        path: list[Vertex] = list()
+        path: List[Vertex] = list()
         curr: Vertex = goal
 
         while curr.Parent != None:

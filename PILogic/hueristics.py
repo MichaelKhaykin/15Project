@@ -1,5 +1,7 @@
+from typing import List, Tuple, Dict
+
 class Hueristics:
-    def ManhattanHueristic(cur: list[list[int]], mapping: dict[int, tuple[int, int]]) -> float:
+    def ManhattanHueristic(cur: List[List[int]], mapping: Dict[int, Tuple[int, int]]) -> float:
         
         sum: float = 0
 

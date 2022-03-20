@@ -1,10 +1,12 @@
+from tkinter import Frame
 import cv2 as cv
 import numpy as np
 from numpy import ndarray
 from graph import Graph
 from vertex import Vertex
+from typing import List
 
-def graphTesting(startGrid: list[list[int]]):
+def graphTesting(startGrid: List[List[int]]):
     graph: Graph = Graph(len(startGrid), len(startGrid))
 
     #Get this from camera at some point
@@ -18,7 +20,7 @@ def graphTesting(startGrid: list[list[int]]):
     path = graph.AStar(startVertex, goalVertex)
     print(len(path))
 
-def SplitImage(img: ndarray, gridSize: int) -> list[ndarray]:
+def SplitImage(img: ndarray, gridSize: int) -> List[ndarray]:
     cuts: list[ndarray] = []
     height: int = img.shape[0] // gridSize
     width: int = img.shape[1] // gridSize
@@ -30,7 +32,7 @@ def SplitImage(img: ndarray, gridSize: int) -> list[ndarray]:
     
     return cuts
 
-def GetGrid(ogImgName: str, unsortedImgName: str, gridSize: int) -> list[list[int]]:
+def GetGrid(ogImgName: str, unsortedImgName: str, gridSize: int) -> List[List[int]]:
     
     ogImg: ndarray = cv.imread(ogImgName)
     ogImgCuts: list[ndarray] = SplitImage(ogImg, gridSize)
@@ -59,20 +61,30 @@ def GetGrid(ogImgName: str, unsortedImgName: str, gridSize: int) -> list[list[in
 
 def main():
 
-    #cap = cv.VideoCapture(0)
+    cap = cv.VideoCapture(0)
+    
     gridSize: int = 3
-    grid: list[list[int]] = GetGrid("images/minesweeper.png", "images/stanshuffle.png", gridSize)
+    grid: List[List[int]] = GetGrid("images/minesweeper.png", "images/stanshuffle.png", gridSize)
     print(grid)
     graphTesting(grid)
 
     while(True):
         # Capture frame-by-frame
 
-        #_, frame = cap.read()
+        _, upsidedownframe = cap.read()
+        frame: ndarray = cv.rotate(upsidedownframe, cv.ROTATE_180)
+        
 
         # Display the resulting frame
 
         #Waits for a user input to quit the application
+        imgray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+        ret, thresh = cv.threshold(imgray, 127, 255, 0)
+        contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+
+        cv.drawContours(frame, contours, -1, (0,255,0), 3)
+
+        cv.imshow('video', frame)
 
         if cv.waitKey(1) & 0xFF == ord('q'):
             break
