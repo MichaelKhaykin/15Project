@@ -59,7 +59,36 @@ def GetGrid(ogImgName: str, unsortedImgName: str, gridSize: int) -> List[List[in
     
     return calculatedGrid
 
+def nothing():
+    pass
+
+def HSVTesting():
+    #Minimum value of a trackbar is always zero, first number represents start pos
+    cv.createTrackbar('Min H','inrange',114,180, nothing)
+    cv.createTrackbar('Min S','inrange',124,255, nothing)
+    cv.createTrackbar('Min V','inrange',48,255, nothing)
+    
+    cv.createTrackbar('Max H','inrange',169,180, nothing)
+    cv.createTrackbar('Max S','inrange',255,255, nothing)
+    cv.createTrackbar('Max V','inrange',150,255, nothing)
+
+def MinH() -> int:
+    return cv.getTrackbarPos('Min H', 'inrange')
+def MinS() -> int:
+    return cv.getTrackbarPos('Min S', 'inrange')
+def MinV() -> int:
+    return cv.getTrackbarPos('Min V', 'inrange')
+def MaxH() -> int:
+    return cv.getTrackbarPos('Max H', 'inrange')
+def MaxS() -> int:
+    return cv.getTrackbarPos('Max S', 'inrange')
+def MaxV() -> int:
+    return cv.getTrackbarPos('Max V', 'inrange')
+
 def main():
+
+    cv.namedWindow('inrange')
+    HSVTesting()
 
     cap = cv.VideoCapture(0)
     
@@ -74,17 +103,80 @@ def main():
         _, upsidedownframe = cap.read()
         frame: ndarray = cv.rotate(upsidedownframe, cv.ROTATE_180)
         
+        blur = cv.GaussianBlur(frame,(5,5),0)
 
-        # Display the resulting frame
+        hsv: ndarray = cv.cvtColor(blur, cv.COLOR_BGR2HSV)
+        purple_lowerBound = np.array([MinH(), MinS(), MinV()])
+        purple_upperBound = np.array([MaxH(), MaxS(), MaxV()])
+        inrange = cv.inRange(hsv, purple_lowerBound, purple_upperBound)
 
-        #Waits for a user input to quit the application
-        imgray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-        ret, thresh = cv.threshold(imgray, 127, 255, 0)
-        contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        cv.imshow('inrange', inrange)
 
-        cv.drawContours(frame, contours, -1, (0,255,0), 3)
+        canny = cv.Canny(inrange, 100, 200)
+        cv.imshow('canny', canny)
 
-        cv.imshow('video', frame)
+        contours, hierarchy = cv.findContours(canny, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        contourImg = frame.copy()
+        cv.drawContours(contourImg, contours, -1, (0,255,0), 3)
+
+        cv.imshow('contour', contourImg)
+
+        
+        # filter out contours by non big enough
+
+        absminarea = 500
+        contours = list(filter(lambda x: cv.contourArea(x) > absminarea, contours))
+        
+        if(len(contours) == 0):
+            continue
+        
+        cnt = contours[0]
+        min_area = cv.contourArea(cnt)
+
+        for cont in contours:
+            contArea = cv.contourArea(cont)
+            if contArea < min_area:
+                cnt = cont
+                min_area = cv.contourArea(cont)
+
+        perimeter = cv.arcLength(cnt,True)
+        epsilon = 0.01*cv.arcLength(cnt,True)
+        approx = cv.approxPolyDP(cnt,epsilon,True)
+       
+#        x, y, w, h = cv.boundingRect(approx)
+ #       cutout = frame[y:y + h, x: x + w]
+  #      cv.imshow('cutout', cutout)
+
+        #draw corners
+        corners = frame.copy()
+    #    corners = cv.circle(corners, (x,y), radius=3, color=(0, 0, 255), thickness=-1)
+    #    corners = cv.circle(corners, (x + w,y), radius=3, color=(0, 0, 255), thickness=-1)
+     #   corners = cv.circle(corners, (x,y + h), radius=3, color=(0, 0, 255), thickness=-1)
+     #   corners = cv.circle(corners, (x + w,y + h), radius=3, color=(0, 0, 255), thickness=-1)
+      
+
+        approxImg = frame.copy()
+        cv.drawContours(approxImg, [approx], -1, (0, 0, 255), 3)
+        cv.imshow('approx', approxImg)
+        
+        tl = (approx[0][0], approx[0][1]) #fix this
+        tr = (approx[1][0], approx[1][1])
+        bl = (approx[2][0], approx[2][1])
+        br = (approx[3][0], approx[3][1])
+
+        
+        cv.circle(corners, tl, radius=3, color=(0, 0, 255), thickness=-1)
+        cv.circle(corners, tr, radius=3, color=(0, 0, 255), thickness=-1)
+        cv.circle(corners, bl, radius=3, color=(0, 0, 255), thickness=-1)
+        cv.circle(corners, br, radius=3, color=(0, 0, 255), thickness=-1)
+        cv.imshow('corners', corners)
+        #initialPoints = np.float32([[x, y], [x + w - 1, y], [x + w - 1, y + h - 1], [x, y + h - 1]])
+        #finalPoints = np.float32([[0, 0], [599, 0], [599, 599], [0, 599]])
+
+        #matrix = cv.getPerspectiveTransform(initialPoints, finalPoints)
+        #result = cv.warpPerspective(frame, matrix, (600,600), cv.INTER_LINEAR, borderMode=cv.BORDER_CONSTANT, borderValue=(0,0,0))
+
+        #cv.imshow('perspective', result)
 
         if cv.waitKey(1) & 0xFF == ord('q'):
             break
