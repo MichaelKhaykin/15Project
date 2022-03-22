@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\MichaelKhaykin\\Documents\\15Project\\15PuzzleVisualizer\\15PuzzleVisualizer\\15PuzzleVisualizer.csproj": {}
+    "C:\\Users\\MichaelKhaykin\\Documents\\GitHub\\15Project\\15PuzzleVisualizer\\15PuzzleVisualizer\\15PuzzleVisualizer.csproj": {}
   },
   "projects": {
-    "C:\\Users\\MichaelKhaykin\\Documents\\15Project\\15PuzzleVisualizer\\15PuzzleVisualizer\\15PuzzleVisualizer.csproj": {
+    "C:\\Users\\MichaelKhaykin\\Documents\\GitHub\\15Project\\15PuzzleVisualizer\\15PuzzleVisualizer\\15PuzzleVisualizer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\MichaelKhaykin\\Documents\\15Project\\15PuzzleVisualizer\\15PuzzleVisualizer\\15PuzzleVisualizer.csproj",
+        "projectUniqueName": "C:\\Users\\MichaelKhaykin\\Documents\\GitHub\\15Project\\15PuzzleVisualizer\\15PuzzleVisualizer\\15PuzzleVisualizer.csproj",
         "projectName": "15PuzzleVisualizer",
-        "projectPath": "C:\\Users\\MichaelKhaykin\\Documents\\15Project\\15PuzzleVisualizer\\15PuzzleVisualizer\\15PuzzleVisualizer.csproj",
+        "projectPath": "C:\\Users\\MichaelKhaykin\\Documents\\GitHub\\15Project\\15PuzzleVisualizer\\15PuzzleVisualizer\\15PuzzleVisualizer.csproj",
         "packagesPath": "C:\\Users\\MichaelKhaykin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\MichaelKhaykin\\Documents\\15Project\\15PuzzleVisualizer\\15PuzzleVisualizer\\obj\\",
+        "outputPath": "C:\\Users\\MichaelKhaykin\\Documents\\GitHub\\15Project\\15PuzzleVisualizer\\15PuzzleVisualizer\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",

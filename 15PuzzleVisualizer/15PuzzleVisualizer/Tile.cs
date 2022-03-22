@@ -43,17 +43,26 @@ namespace _15PuzzleVisualizer
 
         public PictureBox Box;
 
+        public int OgLocationX { get; }
+        public int OgLocationY { get; }
+
+        public Point OgLocation => new Point(OgLocationX * Box.Image.Width, OgLocationY * Box.Image.Height);
         public Tile(int value, int x, int y, Image image)
         {
+            OgLocationX = x;
+            OgLocationY = y;
+
             Value = value;
             Box = new PictureBox()
             {
                 Image = image,
                 SizeMode = PictureBoxSizeMode.AutoSize,
-                Visible = value != 0,
                 Tag = new Point(x, y),
-                BorderStyle = BorderStyle.FixedSingle
+                Visible = value != 0,
+                BorderStyle = BorderStyle.FixedSingle,
             };
+
+
             X = x;
             Y = y;
         }

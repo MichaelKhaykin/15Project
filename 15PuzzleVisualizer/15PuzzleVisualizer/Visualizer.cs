@@ -24,12 +24,16 @@ namespace _15PuzzleVisualizer
 
         private void Visualizer_Load(object sender, EventArgs e)
         {
-            Image ogImage = new Bitmap("minesweeperflag.png");
-            Image resizedImage = new Bitmap(ogImage, new Size(600, 600));
+            this.BackColor = Color.White;
 
-            resizedImage.Save("minesweeper900x900.png", ImageFormat.Png);
+            string n = "background";
+            Image ogImage = new Bitmap($"{n}.png");
+            Size resize = new Size(800, 800);
+            Image resizedImage = new Bitmap(ogImage, resize);
 
-            board = new Board(new Point(this.Width / 2 - resizedImage.Width / 2, this.Height / 2 - resizedImage.Height / 2), gridSize: 3, resizedImage);
+            resizedImage.Save($"{n}{resize.Width}x{resize.Height}.png", ImageFormat.Png);
+
+            board = new Board(new Point(this.Width / 2, this.Height / 2), gridSize: 4, resizedImage, 100, Color.Black, Color.Purple);
             Controls.Add(board);
         }
     }

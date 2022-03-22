@@ -12,6 +12,9 @@
     <None Update="background.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="cutedoggy.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="minesweeperflag.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
