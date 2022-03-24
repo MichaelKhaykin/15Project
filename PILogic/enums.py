@@ -1,4 +1,4 @@
-class States:
+class trackerStates:
     Waiting = 1,
     Following = 2,
-    Solve = 3,
+    Solving = 3,
