@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -34,6 +35,8 @@ namespace _15PuzzleVisualizer
 
         States boardState = States.Idle;
 
+        UdpClient client = new UdpClient();
+
         /// <summary>
         /// Location represents where the center of the board should go
         /// </summary>
@@ -45,8 +48,10 @@ namespace _15PuzzleVisualizer
         /// <param name="gameBoardBackColor"></param>
         public Board(Point location, int gridSize, Image image, int padding, Color backColor, Color gameBoardBackColor)
         {
+            client.Connect("192.168.1.126", 5000);
+
             Grid = new Tile[gridSize, gridSize];
-            
+
             Size = new Size(image.Size.Width + padding, image.Size.Height + padding + 200);
 
             timer = new()
@@ -117,7 +122,7 @@ namespace _15PuzzleVisualizer
             bg.Controls.Add(panel);
             Controls.Add(bg);
 
-           // DebugSave("minesweeper");
+            // DebugSave("minesweeper");
         }
 
         private async void ResetButton_Click(object sender, EventArgs e)
@@ -126,22 +131,22 @@ namespace _15PuzzleVisualizer
 
             boardState = States.Resetting;
             //Lerp all tiles into place and when done reset board
-            foreach(var item in Grid)
+            foreach (var item in Grid)
             {
-                LerpManager<Point, Tile>.AddLerp(new Lerp<Point, Tile>(item, item.Box.Location, intToVal[item.Value].OgLocation, 0.5f, LerpMethods.PointLerp, () => 
-                { 
-                       
+                LerpManager<Point, Tile>.AddLerp(new Lerp<Point, Tile>(item, item.Box.Location, intToVal[item.Value].OgLocation, 0.5f, LerpMethods.PointLerp, () =>
+                {
+
                 }));
             }
 
             while (LerpManager<Point, Tile>.Count != 0) await Task.Delay(1);
 
             //Reset grid
-            for(int i = 0; i < GridHeight; i++)
+            for (int i = 0; i < GridHeight; i++)
             {
-                for(int j = 0; j < GridWidth; j++)
+                for (int j = 0; j < GridWidth; j++)
                 {
-                    Grid[i, j] = intToVal[(i * GridWidth + j + 1 ) % (GridWidth * GridHeight)];
+                    Grid[i, j] = intToVal[(i * GridWidth + j + 1) % (GridWidth * GridHeight)];
                     Grid[i, j].X = Grid[i, j].OgLocationX;
                     Grid[i, j].Y = Grid[i, j].OgLocationY;
                 }
@@ -154,9 +159,13 @@ namespace _15PuzzleVisualizer
         {
             if (boardState != States.Idle) return;
 
+            
+            client.Send(Encoding.ASCII.GetBytes("S"), 1);
+            await Task.Delay(250);
+
             boardState = States.Shuffling;
 
-            var moves = GetShuffleMoves(5);
+            var moves = GetShuffleMoves(20);
             foreach (var move in moves)
             {
                 var tile = Grid[move.sy, move.sx];
@@ -165,6 +174,9 @@ namespace _15PuzzleVisualizer
             }
 
             boardState = States.Idle;
+
+            await Task.Delay(250);
+            client.Send(Encoding.ASCII.GetBytes("U"), 1);
         }
 
         public List<Swap> GetShuffleMoves(int iterations)

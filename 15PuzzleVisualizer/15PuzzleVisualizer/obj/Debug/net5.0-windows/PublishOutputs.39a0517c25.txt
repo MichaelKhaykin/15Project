@@ -1,0 +1,10 @@
+C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\publish\background.png
+C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\publish\cutedoggy.png
+C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\publish\IMG_4822.png
+C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\publish\minesweeperflag.png
+C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\publish\tickboxchecked.PNG
+C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\publish\15PuzzleVisualizer.exe
+C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\publish\15PuzzleVisualizer.dll
+C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\publish\15PuzzleVisualizer.deps.json
+C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\publish\15PuzzleVisualizer.runtimeconfig.json
+C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\publish\15PuzzleVisualizer.pdb

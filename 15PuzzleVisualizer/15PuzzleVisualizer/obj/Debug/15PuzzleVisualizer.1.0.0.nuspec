@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>15PuzzleVisualizer</id>
+    <version>1.0.0</version>
+    <authors>15PuzzleVisualizer</authors>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework="net5.0-windows7.0" />
+    </dependencies>
+    <frameworkReferences>
+      <group targetFramework="net5.0-windows7.0">
+        <frameworkReference name="Microsoft.WindowsDesktop.App.WindowsForms" />
+      </group>
+    </frameworkReferences>
+  </metadata>
+  <files>
+    <file src="C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\15PuzzleVisualizer.runtimeconfig.json" target="lib\net5.0-windows7.0\15PuzzleVisualizer.runtimeconfig.json" />
+    <file src="C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\15PuzzleVisualizer.dll" target="lib\net5.0-windows7.0\15PuzzleVisualizer.dll" />
+  </files>
+</package>

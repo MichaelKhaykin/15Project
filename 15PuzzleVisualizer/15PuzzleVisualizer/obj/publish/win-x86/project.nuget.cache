@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "nSaTh54iH7rXz2MhwAG78em1sGPvPDyWiOrzhVW6BLxGhYbb6AVvVpwoXtXGno/G5QzydSwSqbQnG37hgxNtCQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\MichaelKhaykin\\Documents\\GitHub\\15Project\\15PuzzleVisualizer\\15PuzzleVisualizer\\15PuzzleVisualizer.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\MichaelKhaykin\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x86\\5.0.12\\microsoft.netcore.app.runtime.win-x86.5.0.12.nupkg.sha512",
+    "C:\\Users\\MichaelKhaykin\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x86\\5.0.12\\microsoft.windowsdesktop.app.runtime.win-x86.5.0.12.nupkg.sha512",
+    "C:\\Users\\MichaelKhaykin\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x86\\5.0.12\\microsoft.aspnetcore.app.runtime.win-x86.5.0.12.nupkg.sha512"
+  ],
+  "logs": []
+}

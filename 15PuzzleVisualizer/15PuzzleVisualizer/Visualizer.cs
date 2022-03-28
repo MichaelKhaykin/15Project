@@ -20,20 +20,22 @@ namespace _15PuzzleVisualizer
 
             this.Load += Visualizer_Load;
             this.WindowState = FormWindowState.Maximized;
+            this.FormBorderStyle = FormBorderStyle.None;
+
         }
 
         private void Visualizer_Load(object sender, EventArgs e)
         {
             this.BackColor = Color.White;
-
+       
             string n = "background";
-            Image ogImage = new Bitmap($"{n}.png");
-            Size resize = new Size(800, 800);
+            Image ogImage = new Bitmap(Properties.Resources.background);// $"{n}.png");
+            Size resize = new Size(600, 600);
             Image resizedImage = new Bitmap(ogImage, resize);
-
+          
             resizedImage.Save($"{n}{resize.Width}x{resize.Height}.png", ImageFormat.Png);
-
-            board = new Board(new Point(this.Width / 2, this.Height / 2), gridSize: 4, resizedImage, 100, Color.Black, Color.Purple);
+          
+            board = new Board(new Point(this.Width / 2, this.Height / 2), gridSize: 3, resizedImage, 100, Color.Black, Color.Purple);
             Controls.Add(board);
         }
     }
