@@ -4,15 +4,15 @@ from helpers import dirs
 
 from typing import List, Tuple
 
-class Vertex:
+class vertex:
     GScore: float
     FScore: float
-    Parent: Vertex
-    Neighbors: List[Vertex]
+    Parent: vertex
+    Neighbors: List[vertex]
     Value: List[List[int]]
     EmptySpot: Tuple[int, int]
 
-    def __init__(self: Vertex):
+    def __init__(self: vertex):
         self.GScore = float("inf")
         self.FScore = float("inf")
         self.Parent = None
@@ -20,25 +20,25 @@ class Vertex:
         self.Value = [[]]
         self.EmptySpot = (-1, -1)
 
-    def __lt__(self: Vertex, obj: Vertex):
+    def __lt__(self: vertex, obj: vertex):
         return self.FScore < obj.FScore
 
-    def __le__(self: Vertex, obj: Vertex):
+    def __le__(self: vertex, obj: vertex):
         return self.FScore <= obj.FScore
 
-    def __eq__(self: Vertex, obj: Vertex):
+    def __eq__(self: vertex, obj: vertex):
         if obj is None:
             return False
         
         return self.FScore == obj.FScore
 
-    def __gt__(self: Vertex, obj: Vertex):
+    def __gt__(self: vertex, obj: vertex):
         return self.FScore > obj.FScore
 
-    def __ge__(self: Vertex, obj: Vertex):
+    def __ge__(self: vertex, obj: vertex):
         return self.FScore >= obj.FScore
 
-    def GenerateMoves(self: Vertex, goal: List[List[int]]) -> bool:
+    def GenerateMoves(self: vertex, goal: List[List[int]]) -> bool:
 
         if self.Value == goal:
             return True
@@ -54,7 +54,7 @@ class Vertex:
 
             if offsetx >= 0 and offsetx < size and offsety >= 0 and offsety < size:
                 
-                newV: Vertex = Vertex()
+                newV: vertex = vertex()
                 newV.EmptySpot = (offsety, offsetx)
                 
                 newV.Value = list(map(list, self.Value))

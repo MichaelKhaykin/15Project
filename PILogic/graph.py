@@ -1,16 +1,16 @@
 from __future__ import annotations
-from vertex import Vertex
+from vertex import vertex 
 from collections import deque
 from heapq import *
 from hueristics import Hueristics
-
 from typing import List, Tuple, Dict
 
-class Graph:
+
+class graph:
 
     Mapping: Dict[int, Tuple[int, int]]
 
-    def __init__(self: Graph, width: int, height: int):
+    def __init__(self: graph, width: int, height: int):
         self.Mapping = {}
 
         for y in range(0, height):
@@ -18,7 +18,7 @@ class Graph:
                 key = y * width + x + 1
                 self.Mapping[key] = (y, x)
 
-    def AStar(self: Graph, start: Vertex, goal: Vertex) -> deque[Vertex]:
+    def AStar(self: graph, start: vertex, goal: vertex) -> deque[vertex]:
         
         Height: int = len(start.Value)
         Width: int = len(start.Value[Height - 1])
@@ -42,7 +42,7 @@ class Graph:
         
         while len(heap) != 0:
             
-            current: Vertex = heappop(heap)[1]
+            current: vertex = heappop(heap)[1]
             
             if(current.GenerateMoves(goal.Value)):
                 goal = current
@@ -63,8 +63,8 @@ class Graph:
                 visited.append(x.Value)
 
         #connect
-        path: List[Vertex] = list()
-        curr: Vertex = goal
+        path: List[vertex] = list()
+        curr: vertex = goal
 
         while curr.Parent != None:
             path.append(curr)
