@@ -5,28 +5,13 @@ import cv2 as cv
 import numpy as np
 import math
 import socket
+import select
 
 from sre_constants import CATEGORY_UNI_DIGIT
 from enums import trackerStates
-from numpy import False_, ndarray
+from numpy import False_, True_, ndarray, true_divide
 from typing import List, Dict
 
-
-def graphTesting(startGrid: List[List[int]]):
-    gridSize: int = len(startGrid)
-    graph: graph = graph(gridSize, gridSize)
-
-    #Get this from camera at some point
-    startVertex: vertex = vertex()
-    startVertex.Value = startGrid
-    
-    goalArr: list[list[int]] = [[(i + j * gridSize + 1) % (gridSize * gridSize) 
-                                for i in range(0, gridSize)] for j in range(0, gridSize)]
-    goalVertex: vertex = vertex()
-    goalVertex.Value = goalArr
-    
-    path = graph.AStar(startVertex, goalVertex)
-    print(len(path))
 
 def main():
 
@@ -43,26 +28,41 @@ def main():
     # Bind to address and ip
     UDPServerSocket.bind((localIP, localPort))
     print("UDP server up and listening")
-
+#(2, 1), (2, 2), (1, 2), (1, 1), (0, 1), (0, 2), (1, 2), (1, 1), (1, 0), (2, 0), (2, 1), (1, 1), (1, 0), (0, 0), (0, 1), (1, 1), (2, 1), (2, 2)]
     data = ''
-
-    rob: robot = robot(gridSize, cameraID, False)
+    prevData = None
+    rob: robot = robot(gridSize, cameraID, True)
+    rob.state = trackerStates.Waiting
 
     while(True):
 
+        rob.update(UDPServerSocket)
+        
+        #UDPServerSocket.sendto("m".encode('utf-8'), ('192.168.1.226', 5000))
         try:
-            data, _ = UDPServerSocket.recvfrom(10000)
+            data, _ = UDPServerSocket.recvfrom(1)
         except socket.error:
             pass
-        
-        if data == b'S':
-            rob.state = trackerStates.Following
-        elif data == b'U':
-            rob.state = trackerStates.Solving
 
-        rob.update()
+        if data == '' or prevData == data:
+            continue
+
+        print(f'Data recieved {data}')
+
+        if data == b'C':
+            rob.state = trackerStates.Calibrating
+        elif data == b'F':
+            rob.state = trackerStates.Following
+        elif data == b'M':
+            rob.state = trackerStates.CalculateSolution
+            print('calculating solution')
+        
+        
+        prevData = data
+
     
-    print('hello')
 
 if __name__ == "__main__":
     main()
+
+    #[(2, 1), (2, 0), (1, 0), (1, 1), (0, 1), (0, 2), (1, 2), (2, 2), (2, 1), (1, 1), (1, 2), (0, 2), (0, 1), (1, 1), (1, 0), (2, 0), (2, 1), (1, 1), (1, 2), (2, 2)]
