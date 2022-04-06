@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -14,6 +16,7 @@ namespace _15PuzzleVisualizer
     {
         enum States
         {
+            Calibrate,
             Idle,
             Shuffling,
             Resetting,
@@ -24,18 +27,31 @@ namespace _15PuzzleVisualizer
         public int GridWidth => Grid.GetLength(1);
         public int GridHeight => Grid.GetLength(0);
 
+        public int CellWidth { get; }
+        public int CellHeight { get; }
+
         private Panel panel;
         private Image image;
         private Timer timer;
         private Button shuffleButton;
         private Button resetButton;
+        private Button calibrateButton;
+        private Button solveButton;
+        private Button changeImageButton;
         private Control bg;
+
 
         Dictionary<int, Tile> intToVal = new Dictionary<int, Tile>();
 
         States boardState = States.Idle;
 
         UdpClient client = new UdpClient();
+
+        Bitmap panelBg;
+        Graphics panelGfx;
+        Image cellImage;
+
+        private int MessageID = 0;
 
         /// <summary>
         /// Location represents where the center of the board should go
@@ -46,13 +62,62 @@ namespace _15PuzzleVisualizer
         /// <param name="padding"></param>
         /// <param name="backColor"></param>
         /// <param name="gameBoardBackColor"></param>
-        public Board(Point location, int gridSize, Image image, int padding, Color backColor, Color gameBoardBackColor)
+        Size imageSize = new Size(600, 600);
+
+        public Board(Point location, int gridSize, Image rawimage, int padding, Color backColor, Color gameBoardBackColor, Image rawbackgroundCellImage)
         {
             client.Connect("192.168.1.126", 5000);
 
+            SetImage((Bitmap)rawimage);
+
+            panelBg = new Bitmap(imageSize.Width, imageSize.Height);
+            panelGfx = Graphics.FromImage(panelBg);
+            panelGfx.FillRectangle(new SolidBrush(gameBoardBackColor), new Rectangle(0, 0, panelBg.Width, panelBg.Height));
+
             Grid = new Tile[gridSize, gridSize];
 
-            Size = new Size(image.Size.Width + padding, image.Size.Height + padding + 200);
+            CellWidth = imageSize.Width / gridSize;
+            CellHeight = imageSize.Height / gridSize;
+
+            panel = new()
+            {
+                Location = new Point(padding / 2, padding / 2),
+                Size = imageSize,
+                BorderStyle = BorderStyle.FixedSingle,
+                BackColor = gameBoardBackColor,
+            };
+
+            for (int x = 0; x < gridSize; x++)
+            {
+                for (int y = 0; y < gridSize; y++)
+                {
+                    int number = (y * gridSize + x + 1) % Grid.Length;
+                    var cut = Cut(x * CellWidth, y * CellHeight, CellWidth, CellHeight);
+                    Tile tile = new Tile(number, x, y, cut);
+
+                    intToVal.Add(number, tile);
+
+                    tile.Box.Click += Box_Click;
+
+                    panel.Controls.Add(tile.Box);
+                    tile.Box.Name = number == 0 ? "Empty" : "Filled";
+                    Grid[y, x] = tile;
+                }
+            }
+
+            Image ogLogo = new Bitmap(rawbackgroundCellImage);
+            float ratio = ((imageSize.Width / gridSize) / 2) / ogLogo.Width;
+            Size newLogoSize = new Size((int)(ratio * ogLogo.Width), (int)(ratio * ogLogo.Height));
+            Bitmap logo = new Bitmap(ogLogo, newLogoSize);
+
+            this.cellImage = logo;
+
+            DrawLogo(GridWidth - 1, GridHeight - 1);
+            panel.BackgroundImage = panelBg;
+            
+            this.Tag = "Keep";
+
+            Size = new Size(imageSize.Width + padding, imageSize.Height + padding + 200);
 
             timer = new()
             {
@@ -63,46 +128,17 @@ namespace _15PuzzleVisualizer
 
             bg = new Control()
             {
-                Size = new Size(image.Width + padding, image.Height + padding),
-                BackColor = backColor
+                Size = new Size(imageSize.Width + padding, imageSize.Height + padding),
+                BackColor = backColor,
+                Tag = "Keep"
             };
 
-            Location = new Point(location.X - bg.Width / 2, location.Y - bg.Height / 2);
-
-            panel = new()
-            {
-                Location = new Point(padding / 2, padding / 2),
-                Size = image.Size,
-                BorderStyle = BorderStyle.FixedSingle,
-                BackColor = gameBoardBackColor
-            };
-
-            int cellWidth = image.Width / gridSize;
-            int cellHeight = image.Height / gridSize;
-
-            this.image = image;
-
-            for (int x = 0; x < gridSize; x++)
-            {
-                for (int y = 0; y < gridSize; y++)
-                {
-                    int number = (y * gridSize + x + 1) % Grid.Length;
-                    var cut = Cut(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
-                    Tile tile = new Tile(number, x, y, cut);
-
-                    intToVal.Add(number, tile);
-
-                    tile.Box.Click += Box_Click;
-
-                    panel.Controls.Add(tile.Box);
-                    Grid[y, x] = tile;
-                }
-            }
+            Location = location;
 
             shuffleButton = new Button()
             {
                 Location = new Point(bg.Left, bg.Bottom),
-                Size = new Size(cellWidth / 2, cellHeight / 4),
+                Size = new Size(CellWidth / 2, CellHeight / 4),
                 Text = "Shuffle",
                 BackColor = Color.Red
             };
@@ -111,20 +147,172 @@ namespace _15PuzzleVisualizer
             resetButton = new Button()
             {
                 Location = new Point(shuffleButton.Right, bg.Bottom),
-                Size = new Size(cellWidth / 2, cellHeight / 4),
+                Size = new Size(CellWidth / 2, CellHeight / 4),
                 Text = "Reset",
                 BackColor = Color.Red
             };
             resetButton.Click += ResetButton_Click;
 
+            calibrateButton = new Button()
+            {
+                Location = new Point(resetButton.Right, bg.Bottom),
+                Size = new Size(CellWidth / 2, CellHeight / 4),
+                Text = "Calibrate",
+                Tag = "Keep",
+                BackColor = Color.Red
+            };
+            calibrateButton.Click += CalibrateButton_Click;
+
+            solveButton = new Button()
+            {
+                Location = new Point(shuffleButton.Left, shuffleButton.Bottom),
+                Size = new Size(CellWidth / 2, CellHeight / 4),
+                Text = "Solve",
+                BackColor = Color.Red
+            };
+
+            solveButton.Click += SolveButton_Click;
+
+            changeImageButton = new Button()
+            {
+                Location = new Point(solveButton.Right, calibrateButton.Bottom),
+                Size = new Size(CellWidth / 2, CellHeight / 4),
+                Text = "Choose Image",
+                BackColor = Color.Red
+            };
+
+            changeImageButton.Click += ChangeImageButton_Click;
+
             Controls.Add(shuffleButton);
             Controls.Add(resetButton);
+            Controls.Add(calibrateButton);
+            Controls.Add(solveButton);
+            Controls.Add(changeImageButton);
             bg.Controls.Add(panel);
             Controls.Add(bg);
 
+            boardState = States.Calibrate;
+
+            this.KeyDown += Board_KeyDown;
             // DebugSave("minesweeper");
         }
 
+        private void SetImage(Bitmap rawimage)
+        {
+            Image ogImage = new Bitmap(rawimage);
+            Image resizedImage = new Bitmap(ogImage, imageSize);
+            this.image = resizedImage;
+        }
+        private void ChangeImageButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog f = new OpenFileDialog();
+            var result = f.ShowDialog();
+            if(result == DialogResult.OK || result == DialogResult.Yes)
+            {
+                var extension = Path.GetExtension(f.FileName);
+                if(extension != ".bmp" && extension != ".png")
+                {
+                    MessageBox.Show("Please choose a file with a png or bmp format!");
+                    return;
+                }
+                Load(new Bitmap(f.FileName));
+            }
+        }
+
+        private void Load(Bitmap newpicture)
+        {
+            SetImage(newpicture);
+            for (int y = 0; y < GridHeight; y++)
+            {
+                for(int x = 0; x < GridWidth; x++)
+                {
+                    Grid[y, x].Box.Image = Cut(x * CellWidth, y * CellHeight, CellWidth, CellHeight);
+                }
+            }
+        }
+
+        bool isDebug = false;
+        private void Board_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.D)
+            {
+                isDebug = !isDebug;
+            }
+
+            for (int y = 0; y < GridHeight; y++)
+            {
+                for (int x = 0; x < GridWidth; x++)
+                {
+                    if (isDebug)
+                    {
+                        Grid[y, x].DrawNumber(this.Font);
+                    }
+                    else
+                    {
+                        Grid[y, x].ClearNumber();
+                    }
+                }
+            }
+        }
+
+        private async void SolveButton_Click(object sender, EventArgs e)
+        {
+            await SendMessage("M");
+        }
+
+        private void RecursivelyChange(Control c, Predicate<Control> p, bool enabled)
+        {
+            if (p(c))
+            {
+                c.Enabled = enabled;
+                c.Visible = enabled;
+            }
+
+            foreach (Control m in c.Controls)
+            {
+                RecursivelyChange(m, p, enabled);
+            }
+        }
+        private async void CalibrateButton_Click(object sender, EventArgs e)
+        {
+            RecursivelyChange(this, p => p.Tag != "Keep", false);
+
+            Panel newP = new Panel()
+            {
+                Location = panel.Location,
+                Size = panel.Size,
+                BackColor = Color.Brown
+            };
+            bg.Controls.Add(newP);
+            Bitmap m = new Bitmap(newP.Width, newP.Height);
+            Graphics gfx = Graphics.FromImage(m);
+
+            for (int i = 0; i < GridHeight; i++)
+            {
+                for (int j = 0; j < GridWidth; j++)
+                {
+                    int rad = CellWidth / 6;
+                    gfx.FillRectangle(new SolidBrush(Color.Purple), new Rectangle(j * CellWidth + CellWidth / 2 - rad, i * CellHeight + CellHeight / 2 - rad, rad * 2, rad * 2));
+                }
+            }
+            newP.BackgroundImage = m;
+
+            await SendMessage("C");
+            await Task.Delay(5250);
+
+            bg.Controls.Remove(bg);
+            Controls.Remove(calibrateButton);
+
+            RecursivelyChange(this, p => p.Name != "Empty", true);
+
+            boardState = States.Idle;
+        }
+
+        private async Task SendMessage(string message)
+        {
+            var bytes = Encoding.ASCII.GetBytes(message + $"{MessageID++}");
+            await client.SendAsync(bytes, bytes.Length);
+        }
         private async void ResetButton_Click(object sender, EventArgs e)
         {
             if (boardState != States.Idle) return;
@@ -152,15 +340,18 @@ namespace _15PuzzleVisualizer
                 }
             }
 
+            DrawLogo(GridWidth - 1, GridHeight - 1);
+
             boardState = States.Idle;
         }
 
+        float speed = 0.5f;
         private async void ShuffleButton_Click(object sender, EventArgs e)
         {
             if (boardState != States.Idle) return;
 
-            
-            client.Send(Encoding.ASCII.GetBytes("S"), 1);
+
+            await SendMessage("F");
             await Task.Delay(250);
 
             boardState = States.Shuffling;
@@ -170,13 +361,14 @@ namespace _15PuzzleVisualizer
             {
                 var tile = Grid[move.sy, move.sx];
                 var empty = Grid[move.ey, move.ex];
-                await SwapTile(tile, empty, 0.5f);
+                await SwapTile(tile, empty, speed);
+                await Task.Delay(150);
             }
 
             boardState = States.Idle;
 
             await Task.Delay(250);
-            client.Send(Encoding.ASCII.GetBytes("U"), 1);
+            await SendMessage("W");
         }
 
         public List<Swap> GetShuffleMoves(int iterations)
@@ -233,8 +425,13 @@ namespace _15PuzzleVisualizer
             //Lerp this tile to empty tile location
             LerpManager<Point, Tile>.AddLerp(new Lerp<Point, Tile>(tile, tile.Box.Location, empty.Box.Location, speed, LerpMethods.PointLerp, () =>
             {
+                int x = tile.X;
+                int y = tile.Y;
+
                 tile.X = goalX;
                 tile.Y = goalY;
+
+                DrawLogo(x, y);
             }));
 
             //Set empty location into current tile position
@@ -242,6 +439,14 @@ namespace _15PuzzleVisualizer
             empty.Y = tile.Y;
 
             while (oldC != LerpManager<Point, Tile>.Count) await Task.Delay(1);
+        }
+
+        private void DrawLogo(int x, int y)
+        {
+            panelGfx.Clear(panel.BackColor);
+            panelGfx.DrawImage(cellImage, x * CellWidth + CellWidth / 2 - cellImage.Width / 2, y * CellHeight + CellHeight / 2 - cellImage.Height / 2);
+            panel.BackgroundImage = panelBg;
+            panel.Invalidate();
         }
         private async void Box_Click(object sender, EventArgs e)
         {
@@ -259,7 +464,9 @@ namespace _15PuzzleVisualizer
                 return;
             }
 
-            await SwapTile(tile, empty, 0.5f);
+            await SendMessage("F");
+            await SwapTile(tile, empty, speed);
+            await SendMessage("W");
 
             boardState = States.Idle;
         }
@@ -280,6 +487,30 @@ namespace _15PuzzleVisualizer
             Graphics gfx = Graphics.FromImage(map);
             gfx.DrawImage(image, 0, 0, new Rectangle(x, y, width, height), GraphicsUnit.Pixel);
             return map;
+        }
+
+        private PointF[] StarPoints(int num_points, Rectangle bounds)
+        {
+            // Make room for the points.
+            PointF[] pts = new PointF[num_points];
+
+            double rx = bounds.Width / 2;
+            double ry = bounds.Height / 2;
+            double cx = bounds.X + rx;
+            double cy = bounds.Y + ry;
+
+            // Start at the top.
+            double theta = -Math.PI / 2;
+            double dtheta = 4 * Math.PI / num_points;
+            for (int i = 0; i < num_points; i++)
+            {
+                pts[i] = new PointF(
+                    (float)(cx + rx * Math.Cos(theta)),
+                    (float)(cy + ry * Math.Sin(theta)));
+                theta += dtheta;
+            }
+
+            return pts;
         }
 
         private void DebugSave(string name)

@@ -14,6 +14,7 @@ namespace _15PuzzleVisualizer
     public partial class Visualizer : Form
     {
         Board board;
+        Label exitLabel;
         public Visualizer()
         {
             InitializeComponent();
@@ -24,19 +25,58 @@ namespace _15PuzzleVisualizer
 
         }
 
+        private void ExitLabel_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
         private void Visualizer_Load(object sender, EventArgs e)
         {
-            this.BackColor = Color.White;
-       
-            string n = "background";
-            Image ogImage = new Bitmap(Properties.Resources.background);// $"{n}.png");
-            Size resize = new Size(600, 600);
-            Image resizedImage = new Bitmap(ogImage, resize);
-          
-            resizedImage.Save($"{n}{resize.Width}x{resize.Height}.png", ImageFormat.Png);
-          
-            board = new Board(new Point(this.Width / 2, this.Height / 2), gridSize: 3, resizedImage, 100, Color.Black, Color.Purple);
+            this.BackColor = Color.Brown;
+
+            string exitText = "Exit";
+            exitLabel = new Label()
+            {
+                Text = exitText,
+                BackColor = this.BackColor,
+                Font = this.Font,
+                AutoSize = true,
+                Location = new Point(this.Right - TextRenderer.MeasureText(exitText, this.Font).Width, this.Top),
+            };
+            exitLabel.Click += ExitLabel_Click;
+            Controls.Add(exitLabel);
+
+            string restartText = "Restart";
+            var restartLabel = new Label()
+            {
+                Text = restartText,
+                BackColor = this.BackColor,
+                Font = this.Font,
+                AutoSize = true,
+                Location = new Point(this.Right - TextRenderer.MeasureText(restartText, this.Font).Width, exitLabel.Bottom),
+            };
+            restartLabel.Click += RestartLabel_Click;
+            Controls.Add(restartLabel);
+            Init();
+        }
+
+        void Init()
+        {
+            int gridSize = 3;
+            int padding = 100;
+            board = new Board(new Point(0, 0), gridSize, Properties.Resources.background, padding, Color.Black, Color.Purple, Properties.Resources.gmrLogoYellowBrain);
             Controls.Add(board);
+        }
+
+        private void RestartLabel_Click(object sender, EventArgs e)
+        {
+            Controls.Remove(board);
+            Init();
+        }
+
+        private void Visualizer_Load_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

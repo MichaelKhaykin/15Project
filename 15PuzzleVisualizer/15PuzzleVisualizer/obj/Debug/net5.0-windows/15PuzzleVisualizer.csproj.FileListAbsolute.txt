@@ -29,7 +29,6 @@ C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVi
 C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\15PuzzleVisualizer.dll
 C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\ref\15PuzzleVisualizer.dll
 C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\15PuzzleVisualizer.pdb
-C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\obj\Debug\net5.0-windows\15PuzzleVisualizer.csproj.AssemblyReference.cache
 C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\obj\Debug\net5.0-windows\_15PuzzleVisualizer.Visualizer.resources
 C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\obj\Debug\net5.0-windows\15PuzzleVisualizer.csproj.GenerateResource.cache
 C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\obj\Debug\net5.0-windows\15PuzzleVisualizer.GeneratedMSBuildEditorConfig.editorconfig
@@ -42,3 +41,5 @@ C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVi
 C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\obj\Debug\net5.0-windows\15PuzzleVisualizer.genruntimeconfig.cache
 C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\cutedoggy.png
 C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\bin\Debug\net5.0-windows\IMG_4822.png
+C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\obj\Debug\net5.0-windows\_15PuzzleVisualizer.Properties.Resources.resources
+C:\Users\MichaelKhaykin\Documents\GitHub\15Project\15PuzzleVisualizer\15PuzzleVisualizer\obj\Debug\net5.0-windows\15PuzzleVisualizer.csproj.AssemblyReference.cache

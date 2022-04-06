@@ -12,7 +12,7 @@ img = pygame.transform.scale(img, [600, 600])
 
 gameBoard: board = board(location = Vector2(50, 50), gridSize = 3, image = img, padding = 0, backColor = Color(0, 0, 0, 0), gameBoardBackColor = Color(128, 0, 128, 255))
 
-elevation: int = 3
+elevation: int = 10
 shuffleButton: button = button("Shuffle", 100, 30, Vector2(gameBoard.left(), gameBoard.bottom() + elevation * 2), elevation, pygame.font.Font(None, 30), gameBoard.shuffle)
 
 screen = pygame.display.set_mode([700, 700])

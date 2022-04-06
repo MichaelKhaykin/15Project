@@ -16,7 +16,7 @@ namespace _15PuzzleVisualizer
         public float Step { get; }
 
         private Func<T, T, float, T> LerpFunc;
-        
+
         private Action OnCompleted;
         public Lerp(U @object, T start, T end, float step, Func<T, T, float, T> lerp, Action oncompleted)
         {
@@ -39,7 +39,10 @@ namespace _15PuzzleVisualizer
         public bool Completed()
         {
             bool completed = TravelPercentage >= 1f;
-            if (completed) OnCompleted();
+            if (completed)
+            {
+                OnCompleted();
+            }
             return completed;
         }
     }

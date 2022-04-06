@@ -47,6 +47,10 @@ namespace _15PuzzleVisualizer
         public int OgLocationY { get; }
 
         public Point OgLocation => new Point(OgLocationX * Box.Image.Width, OgLocationY * Box.Image.Height);
+
+        Graphics gfx;
+        Bitmap canvas;
+        Image ogImage;
         public Tile(int value, int x, int y, Image image)
         {
             OgLocationX = x;
@@ -62,6 +66,12 @@ namespace _15PuzzleVisualizer
                 BorderStyle = BorderStyle.FixedSingle,
             };
 
+            ogImage = image;
+
+            canvas = new Bitmap(image);
+            gfx = Graphics.FromImage(canvas);
+
+
 
             X = x;
             Y = y;
@@ -70,6 +80,20 @@ namespace _15PuzzleVisualizer
         public void Set(Point value)
         {
             Box.Location = value;
+        }
+
+        public void ClearNumber()
+        {
+            canvas = (Bitmap)ogImage;
+            Box.Image = canvas;
+        }
+
+        public void DrawNumber(Font font)
+        {
+            string text = this.Value.ToString();
+            var size = TextRenderer.MeasureText(text, font);
+            gfx.DrawString(text, font, Brushes.Red, new PointF(Box.Width / 2 - size.Width / 2, Box.Height / 2 - size.Height / 2));
+            Box.Image = canvas;
         }
     }
 }

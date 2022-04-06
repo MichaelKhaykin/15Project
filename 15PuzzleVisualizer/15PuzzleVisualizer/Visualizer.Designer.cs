@@ -38,6 +38,7 @@ namespace _15PuzzleVisualizer
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Name = "Visualizer";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Visualizer_Load_1);
             this.ResumeLayout(false);
 
         }
